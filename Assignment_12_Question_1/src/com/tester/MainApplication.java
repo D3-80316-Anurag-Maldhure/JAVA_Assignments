@@ -58,11 +58,12 @@ public class MainApplication {
 					Book b = new Book();
 					System.out.println("------------------------");
 					b.acceptBook();
+					int newQuantity = b.getQuantity();
 					
 					if(books.contains(b)) {
 						int index = books.indexOf(b);
 						int oldQuantity = books.get(index).getQuantity();
-						books.get(index).setQuantity(oldQuantity+1);
+						books.get(index).setQuantity(oldQuantity+newQuantity);
 						System.out.println("----------------------------------");
 						System.out.println("Book count updated in the Library!");
 					}
