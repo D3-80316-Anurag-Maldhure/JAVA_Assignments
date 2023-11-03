@@ -10,8 +10,11 @@ import com.book.Book;
 
 
 //Store Books in HashMap<> so that for given isbn, book can be searched in fastest possible time. 
-//Do we need to write equals() and hashCode() in Book
-//class? 
+//Do we need to write equals() and hashCode() in Book class? 
+
+//Answer - No we do not need to write equals() and hashCode() in Book class since we are searching 
+// 			on isbn which is a string and String class has internal equals()
+
 public class Main {
 
 	public static void main(String[] args) {

@@ -2,7 +2,7 @@ package com.book;
 
 import java.util.Scanner;
 
-public class Book implements Comparable<Book>{
+public class Book{
 	String isbn;
 	double price;
 	String authorName; 
@@ -91,8 +91,4 @@ public class Book implements Comparable<Book>{
 		this.quantity = quantity;
 	}
 
-	@Override
-	public int compareTo(Book o) {
-		return this.isbn.compareTo(o.getIsbn());
-	}
 }
