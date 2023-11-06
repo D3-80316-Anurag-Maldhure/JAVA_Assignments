@@ -8,12 +8,26 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.loading.PrivateClassLoader;
+
 
 public class UserDao implements AutoCloseable{
 	private Connection connection;
+	
+	//for faster execution - Since PrepareStatement - An object that represents a precompiled SQL statement (Refer Javadocs) 
+	PreparedStatement saveStatement;
+	PreparedStatement updateStatement;
+	PreparedStatement deleteByIdStatement;
+	PreparedStatement findByIdStatement;
+	PreparedStatement findAllStatement;
 
 	public UserDao() throws SQLException {
 		this.connection = DBUtil.getConnection();
+		saveStatement 		= connection.prepareStatement("INSERT INTO users VALUES(default,?,?,?,?,?,?,?)");
+		updateStatement 	= connection.prepareStatement("UPDATE users SET first_name=?, last_name=?, email=?, password=?, dob=?, status=?, role=? WHERE id=?");
+		deleteByIdStatement = connection.prepareStatement("DELETE FROM users WHERE id=?");
+		findByIdStatement  	= connection.prepareStatement("SELECT * FROM users WHERE id=?");
+		findAllStatement	= connection.prepareStatement("SELECT * FROM users");
 	}
 	
 	public void close() {
@@ -28,61 +42,66 @@ public class UserDao implements AutoCloseable{
 	//Assignment TODO
 	
 	public int save(User u) throws SQLException{
-		String saveQuery = "INSERT INTO users VALUES(default,?,?,?,?,?,?,?)";
-		try(PreparedStatement statement = connection.prepareStatement(saveQuery)){
-			statement.setString(1, u.getFirst_name());
-			statement.setString(2, u.getLast_name());
-			statement.setString(3, u.getEmail());
-			statement.setString(4, u.getPassword());
+		try{
+			saveStatement.setString(1, u.getFirst_name());
+			saveStatement.setString(2, u.getLast_name());
+			saveStatement.setString(3, u.getEmail());
+			saveStatement.setString(4, u.getPassword());
 			java.sql.Date sDate;
 			sDate = new Date(u.getDob().getTime());
-			statement.setDate(5, sDate); 
-			statement.setInt(6, u.getStatus());
-			statement.setString(7, u.getRole());
+			saveStatement.setDate(5, sDate); 
+			saveStatement.setInt(6, u.getStatus());
+			saveStatement.setString(7, u.getRole());
 
-            int rowCount = statement.executeUpdate();
+            int rowCount = saveStatement.executeUpdate();
             return rowCount;
-		}//statement.close();
+		}
+		finally {
+			saveStatement.close();
+		}
+		
 	}
 	
 	public int update(User u) throws SQLException{
-		String updateQuery = "UPDATE users SET first_name=?, last_name=?, email=?, password=?, dob=?, status=?, role=? WHERE id=?";
-		try( PreparedStatement statement = connection.prepareStatement(updateQuery) ) {
-			statement.setString(1, u.getFirst_name());
-			statement.setString(2, u.getLast_name());
-			statement.setString(3, u.getEmail());
-			statement.setString(4, u.getPassword());
+		try{
+			updateStatement.setString(1, u.getFirst_name());
+			updateStatement.setString(2, u.getLast_name());
+			updateStatement.setString(3, u.getEmail());
+			updateStatement.setString(4, u.getPassword());
 			java.sql.Date sDate;
 			sDate = new Date(u.getDob().getTime());
-			statement.setDate(5, sDate); 
-			statement.setInt(6, u.getStatus());
-			statement.setString(7, u.getRole());
-			statement.setInt(7, u.getId());
+			updateStatement.setDate(5, sDate); 
+			updateStatement.setInt(6, u.getStatus());
+			updateStatement.setString(7, u.getRole());
+			updateStatement.setInt(8, u.getId());
 			
-			int count = statement.executeUpdate();
+			int count = updateStatement.executeUpdate();
 			return count;
-		} // stmt.close();
+		}
+		finally {
+			updateStatement.close();
+		}
 	}
 	
 	public int deleteById(int id) throws SQLException {
-		String deleteByIdQuery = "DELETE FROM users WHERE id=?";
-		try(PreparedStatement statement = connection.prepareStatement(deleteByIdQuery)){
-			statement.setInt(1, id);
+		try{
+			deleteByIdStatement.setInt(1, id);
 
-			int count = statement.executeUpdate();
+			int count = deleteByIdStatement.executeUpdate();
 			return count;
 
-		}//statement.close();
+		}
+		finally {
+			deleteByIdStatement.close();
+		}
 	}
 	
 	public User findById(int id) throws SQLException {
 		User userFound = null;
-		String findByIdQuery = "SELECT * FROM users WHERE id=?";
-		
-		try(PreparedStatement statement = connection.prepareStatement(findByIdQuery)){
-			statement.setInt(1, id);
+		try{
+			findByIdStatement.setInt(1, id);
 			
-			try(ResultSet rSet = statement.executeQuery()) {
+			try(ResultSet rSet = findByIdStatement.executeQuery()) {
 				while(rSet.next()) {
 					id 				= rSet.getInt("id");
 					String fname 	= rSet.getString("first_name");
@@ -96,17 +115,19 @@ public class UserDao implements AutoCloseable{
 					userFound = new User(id, fname, lname, email, password, dob, status, role);
 				}	
 			}//rSet.close();
-		}//statement.close()
+		}
+		finally {
+			findByIdStatement.close();
+		}
 		return userFound;
 	}
 	
 	public List<User> findAll() throws SQLException {
 		List<User> list = new ArrayList<User>();
-		String findAllQuery = "SELECT * FROM users";
 		
-		try(PreparedStatement statement = connection.prepareStatement(findAllQuery)) {
+		try{
 
-			try(ResultSet rSet = statement.executeQuery()) {
+			try(ResultSet rSet = findAllStatement.executeQuery()) {
 				while(rSet.next()) {
 					int id 			= rSet.getInt("id");
 					String fname 	= rSet.getString("first_name");
@@ -121,7 +142,10 @@ public class UserDao implements AutoCloseable{
 					list.add(u);
 				}
 			} // rs.close();
-		} // stmt.close();
+		} 
+		finally {
+			findAllStatement.close();
+		}
 		return list;
 
 	}	
