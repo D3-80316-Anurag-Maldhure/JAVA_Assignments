@@ -88,7 +88,7 @@ public class ApplicationMain {
 					}
 
 					break;
-					// Find candidate of given id *************** Giving id 0
+					// Find candidate of given id 
 				case 5:
 					System.out.println("-----------------------------------------");
 					try(CandidateDao dao = new CandidateDao()) {
@@ -102,7 +102,7 @@ public class ApplicationMain {
 						e.printStackTrace();
 					}
 					break;
-					//Find all *************** Giving id 0
+					//Find all
 				case 6:
 					System.out.println("----------------------------------------------------------------");
 					try(CandidateDao dao = new CandidateDao()) {
@@ -113,7 +113,7 @@ public class ApplicationMain {
 						e.printStackTrace();
 					}
 					break;
-					//find by party *************** Giving id 0
+					//find by party
 				case 7:
 					System.out.println("-----------------------------------------");
 					try(CandidateDao dao = new CandidateDao()) {
