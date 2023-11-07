@@ -15,11 +15,12 @@ public class UserDao implements AutoCloseable{
 	private Connection connection;
 	
 	//for faster execution - Since PrepareStatement - An object that represents a precompiled SQL statement (Refer Javadocs) 
-	private final PreparedStatement saveStatement;
-	private final PreparedStatement updateStatement;
-	private final PreparedStatement deleteByIdStatement;
-	private final PreparedStatement findByIdStatement;
-	private final PreparedStatement findAllStatement;
+	//Can also make final since we don't want to reassign once defined in constructor
+	private PreparedStatement saveStatement;
+	private PreparedStatement updateStatement;
+	private PreparedStatement deleteByIdStatement;
+	private PreparedStatement findByIdStatement;
+	private PreparedStatement findAllStatement;
 
 	public UserDao() throws SQLException {
 		this.connection = DBUtil.getConnection();
@@ -34,6 +35,16 @@ public class UserDao implements AutoCloseable{
 		try {
 			if (connection != null)
 				connection.close();
+			if (saveStatement != null)
+				saveStatement.close();
+			if (updateStatement != null)
+				updateStatement.close();
+			if (deleteByIdStatement != null)
+				deleteByIdStatement.close();
+			if (findByIdStatement != null)
+				findByIdStatement.close();
+			if (findAllStatement != null)
+				findAllStatement.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
