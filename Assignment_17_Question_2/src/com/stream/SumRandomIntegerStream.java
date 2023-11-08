@@ -9,7 +9,7 @@ public class SumRandomIntegerStream {
 		
 		Random random = new Random();
 		
-		IntStream str =  random.ints(10, 1, 1000);
+		IntStream str =  random.ints(10, 1, 1000).peek(x -> System.out.println(x));
 		int sum = str.sum();
 
 		System.out.println("Sum = " + sum);
